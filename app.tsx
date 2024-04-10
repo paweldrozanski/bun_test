@@ -3,10 +3,25 @@ import { streamText } from "hono/streaming";
 import bookRouter from "./routes/books.ts";
 import { logger } from "hono/logger";
 import Top from "./page.tsx";
+import { zValidator } from "@hono/zod-validator";
+import { z } from "zod";
 
 const app = new Hono();
 
 app.use("*", logger());
+
+const route = app.post(
+  "/posts",
+  zValidator(
+    "json",
+    z.object({
+      body: z.string(),
+    }),
+  ),
+  (c) => {
+    return c.json({ hello: "world!" });
+  },
+);
 
 app.route("/book", bookRouter);
 
